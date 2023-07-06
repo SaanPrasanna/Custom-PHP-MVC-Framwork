@@ -8,16 +8,12 @@
                 <div class="error-text mb-3"></div>
                 <div class="row mb-3">
                     <div class="col">
-                        <div class="field input">
-                            <label class="form-label">First Name</label>
-                            <input type="text" name="fname" class="form-control" placeholder="First name" required data-parsley-required-message="Please enter a Last Name">
-                        </div>
+                        <label class="form-label">First Name</label>
+                        <input type="text" name="fname" class="form-control" placeholder="First name" required data-parsley-required-message="Please enter a Last Name">
                     </div>
                     <div class="col">
-                        <div class="field input">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" name="lname" class="form-control" placeholder="Last name" required data-parsley-required-message="Please enter a First Name">
-                        </div>
+                        <label class="form-label">Last Name</label>
+                        <input type="text" name="lname" class="form-control" placeholder="Last name" required data-parsley-required-message="Please enter a First Name">
                     </div>
                 </div>
                 <div class="mb-3">
@@ -37,7 +33,7 @@
                 <div class="mb-3">
                     <label for="cPassword" class="form-label">Confirm Password</label>
                     <div class="input-group">
-                        <input type="password" name="cPassword" id="cPassword" class="form-control" placeholder="Confirm your password" data-parsley-minlength="6" required data-parsley-errors-container=".errorCP" required data-parsley-required-message="Please enter a Confirm Password">
+                        <input type="password" name="cPassword" id="cPassword" class="form-control" placeholder="Confirm your password" data-parsley-minlength="6" required data-parsley-errors-container=".errorCP" required data-parsley-required-message="Please enter a Confirm Password" data-parsley-equalto="#password" data-parsley-equalto-message="Password should be same">
                         <button class="btn btn-outline-secondary" type="button" id="toggleCPassword">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -52,7 +48,7 @@
                 </div>
                 <div class="mb-3">
                     <div class="field button">
-                        <button class="btn btn-dark p-2">Register</button>
+                        <button class="btn btn-dark p-2" id="register">Register</button>
                     </div>
                 </div>
             </form>
@@ -73,6 +69,25 @@
                 errorTemplate: '<small class="form-text text-danger"></small>'
             });
 
+            $('form').submit(function(e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var formData = new FormData(form[0]);
+
+                $.ajax({
+                    url: '/mvc%20architecture/registerUesr',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    error: function(xhr, status, error) {}
+                });
+            });
+
             $('#togglePassword').click(function() {
                 var passwordInput = $('#password');
                 var passwordFieldType = passwordInput.attr('type');
@@ -85,8 +100,7 @@
                     $(this).html('<i class="fas fa-eye"></i>');
                 }
             });
-        });
-        $(document).ready(function() {
+
             $('#toggleCPassword').click(function() {
                 var passwordInput = $('#cPassword');
                 var passwordFieldType = passwordInput.attr('type');
