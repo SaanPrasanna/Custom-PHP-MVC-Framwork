@@ -22,4 +22,8 @@ class UserController {
 
         require_once APP_ROOT . '/views/auth/register.php';
     }
+
+    public function showUsers(RouteCollection $routes) {
+        require_once APP_ROOT . '/views/users.php';
+    }
 }
