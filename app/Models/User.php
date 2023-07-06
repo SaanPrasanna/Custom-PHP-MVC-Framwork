@@ -165,4 +165,35 @@ class User {
             return false;
         }
     }
+
+    public function verifyEmail() {
+        $query = "UPDATE users SET token = :token, activeStatus = :activeStatus WHERE userID = :userID";
+
+        $stmt = $this->conn->prepare($query);
+        $this->setToken("");
+        $stmt->bindParam(":token", $this->token, PDO::PARAM_STR);
+        $stmt->bindParam(":activeStatus", $this->activeStatus, PDO::PARAM_STR);
+        $stmt->bindParam(":userID", $this->userID, PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function isValidToken() {
+        $users = [];
+        $query = "SELECT * FROM users WHERE token = :token AND userID = :userID";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":token", $this->token, PDO::PARAM_STR);
+        $stmt->bindParam(":userID", $this->userID, PDO::PARAM_INT);
+        $stmt->execute();
+        if ($stmt->rowCount() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
