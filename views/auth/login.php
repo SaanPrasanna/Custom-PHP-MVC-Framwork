@@ -24,7 +24,7 @@
                     <button class="btn btn-dark p-2" id="login">Continue to Chat</button>
                 </div>
             </form>
-            <div class="link">Not yet signed up? <a href="<?php echo $routeToRegister ?>">Signup now</a></div>
+            <div class="link">Not yet signed up? <a href="<?php echo $routeToRegister ?>">SignUp now</a></div>
         </section>
     </div>
 
@@ -57,37 +57,6 @@
                     $(this).html('<i class="fas fa-eye"></i>');
                 }
             });
-
-
-            /* 
-                        $('form').submit(function(event) {
-                            var errors = [];
-
-                            validateField('email', errors);
-                            validateField('password', errors);
-
-                            if (errors.length > 0) {
-                                var errorText = errors.join('<br>');
-                                $('.error-text').html(errorText).show();
-                                event.preventDefault();
-                            }
-                        });
-
-                        function validateField(fieldName, errors) {
-                            var fieldInput = $('input[name="' + fieldName + '"]');
-                            var errorText = fieldInput.siblings('.error-text');
-
-                            if (fieldInput.val().trim() === '') {
-                                errors.push(capitalizeFirstLetter(fieldName) + ' is empty!');
-                            }
-
-                            errorText.hide();
-                        }
-
-                        function capitalizeFirstLetter(string) {
-                            return string.charAt(0).toUpperCase() + string.slice(1);
-                        }
-                         */
         });
     </script>
 
