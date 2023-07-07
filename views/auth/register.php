@@ -5,7 +5,7 @@
         <section class="form signup">
             <header class="mb-4 text-center">REALTIME Chat App</header>
             <form action="#" method="POST" enctype="multipart/form-data" autocomplete="off" id="registerForm" data-parsley-validate>
-                <div class="error-text mb-3"></div>
+                <div class="alert " role="alert" id="alert" style="display: none; text-align: center;"></div>
                 <div class="row mb-3">
                     <div class="col">
                         <label class="form-label">First Name</label>
@@ -46,16 +46,18 @@
                         <input type="file" name="image" class="form-control" accept="image/x-png,image/gif,image/jpeg,image/jpg" required data-parsley-required-message="Please choose an image">
                     </div>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3" id="regBtn">
                     <div class="field button">
                         <button class="btn btn-dark p-2" id="register">Register</button>
                     </div>
                 </div>
             </form>
+            <p class="hr"></p>
             <div class="link">Already signed up? <a href="<?php echo $routeToLogin; ?>">Login now</a></div>
         </section>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/mvc architecture/asserts/javascript/parsley.min.js"></script>
 
@@ -69,8 +71,12 @@
                 errorTemplate: '<small class="form-text text-danger"></small>'
             });
 
+
             $('form').submit(function(e) {
                 e.preventDefault();
+
+                $("#register").text("Please Wait...");
+                $("#register").prop('disabled', true);
 
                 var form = $(this);
                 var formData = new FormData(form[0]);
@@ -82,10 +88,19 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        console.log(response);
+                        const data = JSON.parse(response);
+                        $('#register').prop('disabled', false);
+                        if (data.message === "Success") {
+                            $("div .mb-3").hide();
+                            $('#alert').text("Verification Email sent to " + $("#email").val() + ", so before login first verify your email").addClass('alert-success').removeClass('alert-warning').show();
+                        } else {
+                            $('#alert').text(data.message).addClass('alert-warning').removeClass('alert-success').show();
+                            $('#register').html('Register');
+                        }
                     },
                     error: function(xhr, status, error) {}
                 });
+
             });
 
             $('#togglePassword').click(function() {
