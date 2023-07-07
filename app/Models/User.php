@@ -133,27 +133,24 @@ class User {
     }
 
     public function getUserDetails() {
-        $users = [];
+        $user = new User();
         $query = "SELECT * FROM users WHERE userID = :userID";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":userID", $this->userID, PDO::PARAM_INT);
         $stmt->execute();
         if ($stmt->rowCount() == 1) {
-            $user = new User();
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 $user->setUesrID($row['userID']);
                 $user->setFname($row['fname']);
                 $user->setLname($row['lname']);
                 $user->setEmail($row['email']);
                 $user->setImage($row['image']);
-                $users[] = $user;
-            }
         }
-        return $users;
+        return $user;
     }
 
-    public function changeStatus() {
+    public function changeStatus() { // TODO: not used yet
         $query = "UPDATE users SET status = :status WHERE userID = :userID";
 
         $stmt = $this->conn->prepare($query);
@@ -183,7 +180,6 @@ class User {
     }
 
     public function isValidToken() {
-        $users = [];
         $query = "SELECT * FROM users WHERE token = :token AND userID = :userID";
 
         $stmt = $this->conn->prepare($query);
@@ -191,6 +187,79 @@ class User {
         $stmt->bindParam(":userID", $this->userID, PDO::PARAM_INT);
         $stmt->execute();
         if ($stmt->rowCount() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function authentication() {
+        $query = "SELECT * FROM users WHERE email = :email AND password = :password;";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":email", $this->email, PDO::PARAM_STR);
+        $stmt->bindParam(":password", $this->password, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function isVerifiedUser() {
+        $query = "SELECT * FROM users WHERE email = :email AND activeStatus = :activeStatus;";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":email", $this->email, PDO::PARAM_STR);
+        $stmt->bindParam(":activeStatus", $this->activeStatus, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getNewToken() {
+        $query = "UPDATE users SET token = :token WHERE email = :email;";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":token", $this->token, PDO::PARAM_STR);
+        $stmt->bindParam(":email", $this->email, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function findUserID() {
+        $query = "SELECT * FROM users  WHERE email = :email;";
+        $row = [];
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":email", $this->email, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 1) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        return $row;
+    }
+
+    public function resetPassword(){
+        $query = "UPDATE users SET password = :password WHERE email = :email;";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":password", $this->password, PDO::PARAM_STR);
+        $stmt->bindParam(":email", $this->email, PDO::PARAM_STR);
+
+        if ($stmt->execute()) {
             return true;
         } else {
             return false;
