@@ -25,6 +25,10 @@ small{
   font-size: 0.8em !important;
 }
 
+.hr{
+  border-bottom: 1px solid #e6e6e6 !important;
+}
+
 .wrapper {
   background: #fff;
   max-width: 450px;
