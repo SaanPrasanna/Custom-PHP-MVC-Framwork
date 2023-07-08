@@ -82,7 +82,7 @@
                 var formData = new FormData(form[0]);
 
                 $.ajax({
-                    url: '/mvc%20architecture/registerUesr',
+                    url: '/mvc%20architecture/registerUser',
                     type: 'POST',
                     data: formData,
                     processData: false,
