@@ -18,8 +18,8 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/mvc architecture/asserts/javascript/parsley.min.js"></script>
   <script>
-    $(document).onReady(function() {
-      // $
+    $(document).ready(function() {
+      $(document). prop( 'title' , 'REALTIME Chat App | Access Forbidden' );
     });
   </script>
 </body>

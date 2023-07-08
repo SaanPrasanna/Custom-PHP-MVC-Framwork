@@ -17,6 +17,11 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/mvc architecture/asserts/javascript/parsley.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $(document). prop( 'title' , 'REALTIME Chat App | Not Found' );
+    });
+  </script>
 </body>
 
 </html>
