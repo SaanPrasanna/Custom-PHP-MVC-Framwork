@@ -15,6 +15,7 @@ class User {
     protected $status;
     protected $token;
     protected $activeStatus;
+    protected $msg;
     protected $conn;
 
     public function __construct() {
@@ -61,6 +62,10 @@ class User {
         return $this->activeStatus;
     }
 
+    public function getMsg() {
+        return $this->msg;
+    }
+
     public function setUesrID($userID) {
         $this->userID = $userID;
     }
@@ -95,6 +100,10 @@ class User {
 
     public function setActiveStatus($activeStatus) {
         $this->activeStatus = $activeStatus;
+    }
+
+    public function setMsg($msg) {
+        $this->msg = $msg;
     }
 
     public function emailAlreadyExist() {
@@ -161,6 +170,14 @@ class User {
 
         if ($stmt->rowCount() > 0) {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $innerQuery = "SELECT * FROM chats AS c LEFT JOIN users AS u ON u.userID = c.outgoingID WHERE (c.outgoingID = :outgoingID AND c.incomingID = :incomingID)
+                OR (c.outgoingID = :incomingID AND c.incomingId = :outgoingID) ORDER BY c.chatID DESC LIMIT 1;";
+                $innerStmt = $this->conn->prepare($innerQuery);
+                $innerStmt->bindParam(":outgoingID", $this->userID);
+                $innerStmt->bindParam(":incomingID", $row['userID']);
+                $innerStmt->execute();
+                $chat = $innerStmt->fetch(PDO::FETCH_ASSOC);
+
                 $user = new User();
                 $user->setUesrID($row['userID']);
                 $user->setFname($row['fname']);
@@ -168,6 +185,8 @@ class User {
                 $user->setEmail($row['email']);
                 $user->setImage($row['image']);
                 $user->setStatus($row['status']);
+                $user->setMsg($chat['message']);
+
                 $users[] = $user;
             }
         }
@@ -181,13 +200,14 @@ class User {
             'lname' => $this->lname,
             'email' => $this->email,
             'image' => $this->image,
-            'status' => $this->status
+            'status' => $this->status,
+            'message' => $this->msg
         ];
 
         return $array;
     }
 
-    public function changeStatus() { // TODO: Need to implement login
+    public function changeStatus() {
         $query = "UPDATE users SET status = :status WHERE userID = :userID";
 
         $stmt = $this->conn->prepare($query);

@@ -51,15 +51,16 @@ require_once APP_ROOT . '/views/inc/header.php';
                     processData: false,
                     contentType: false,
                     success: function(response) {
+                        console.log(response);
                         var data = '';
                         if (response.length > 0) {
                             $.each(response, function(index, user) {
-                                data += '<a href="chat?id='+ btoa(user.userID) +'">';
+                                data += '<a href="chat?id=' + btoa(user.userID) + '">';
                                 data += '<div class="content">';
                                 data += '<img src="asserts/img/' + user.image + '" class="img-fluid">';
                                 data += '<div class="details">';
                                 data += '<span>' + user.fname + ' ' + user.lname + '</span>';
-                                data += '<div class="text-muted">Hello</div>';
+                                data += '<div class="text-muted">' + user.message + '</div>';
                                 data += '</div>';
                                 data += '</div>';
                                 data += '<div class="status-dot ' + user.status + '"><i class="fas fa-circle"></i></div>';
