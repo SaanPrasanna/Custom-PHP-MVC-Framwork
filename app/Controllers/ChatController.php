@@ -8,6 +8,7 @@ use Symfony\Component\Routing\RouteCollection;
 
 class ChatController {
 
+    // Show the chat conversation
     public function chat(RouteCollection $routes) {
         $routeToLogin = $routes->get('usersPage')->getPath();
         session_start();
@@ -33,6 +34,7 @@ class ChatController {
         }
     }
 
+    // Send Message
     public function sendMessage(RouteCollection $routes) {
         session_start();
         $chat = new Chat();
@@ -54,6 +56,7 @@ class ChatController {
         }
     }
 
+    // Get All Messages
     public function getMessages(RouteCollection $routes) {
         session_start();
         $chatModel = new Chat();

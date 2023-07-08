@@ -9,6 +9,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class UserController {
 
+    // Show login page
     public function indexAction(RouteCollection $routes) {
         session_start();
         $routeToHome =  $routes->get('loginPage')->getPath();
@@ -16,22 +17,14 @@ class UserController {
         $routeToRegister =  $routes->get('registerPage')->getPath();
 
         $userModel = new User();
-        if(isset($_SESSION['id'])){
+        if (isset($_SESSION['id'])) {
             header("Location: users");
-        }else{
+        } else {
             require_once APP_ROOT . '/views/auth/login.php';
         }
     }
 
-    public function notFound(RouteCollection $routes) {
-        $routeToLogin =  $routes->get('usersPage')->getPath();
-        require_once APP_ROOT . '/views/errors/404.php';
-    }
-    public function accessForbidden(RouteCollection $routes) {
-        $routeToLogin =  $routes->get('usersPage')->getPath();
-        require_once APP_ROOT . '/views/errors/403.php';
-    }
-
+    // Authenticate User Credentials and handle session
     public function userAuthentication(RouteCollection $routes) {
         session_start();
         $user = new User();
@@ -59,23 +52,7 @@ class UserController {
         }
     }
 
-    public function logout(RouteCollection $routes) {
-        session_start();
-        $user = new User();
-
-        if (isset($_SESSION['id'])) {
-
-            $user->setUesrID($_SESSION['id']);
-            $user->setStatus("Offline");
-            $user->changeStatus();
-
-            unset($_SESSION['id']);
-            header("Location: login?logout_successfully");
-        } else {
-            header("Location: login?redirect");
-        }
-    }
-
+    // Show user details
     public function usersPage(RouteCollection $routes) {
         session_start();
         $routeToLogout =  $routes->get('logout')->getPath();
@@ -90,6 +67,7 @@ class UserController {
         }
     }
 
+    // Get all Users details
     public function allUsers(RouteCollection $routes) {
         $userModel = new User();
         if (isset($_POST['userID'])) {
@@ -108,6 +86,7 @@ class UserController {
         }
     }
 
+    // Search users by Name
     public function searchUser(RouteCollection $routes) {
         $userModel = new User();
         if (isset($_POST['userID']) && isset($_POST['name'])) {
@@ -132,14 +111,15 @@ class UserController {
         session_start();
         $routeToLogin =  $routes->get('loginPage')->getPath();
         $userModel = new User();
-        
-        if($_SESSION['id']){
+
+        if ($_SESSION['id']) {
             header("Location: users");
-        }else{
+        } else {
             require_once APP_ROOT . '/views/auth/register.php';
         }
     }
 
+    // User Registration and sent verification email
     public function registerUser(RouteCollection $routes) {
 
         if (isset($_FILES['image'])) {
@@ -362,6 +342,7 @@ class UserController {
         }
     }
 
+    // Verify the user by link, which send to the email
     public function verifyUser(RouteCollection $routes) {
 
         $user = new User();
@@ -418,71 +399,13 @@ class UserController {
         }
     }
 
-    public function reset(RouteCollection $routes) {
-        $routeToLogin = $routes->get('loginPage')->getPath();
-        $user = new User();
-
-        if (isset($_GET['token']) && isset($_GET['id'])) {
-            $user->setToken(base64_decode($_GET['token']));
-            $user->setUesrID(base64_decode($_GET['id']));
-            $user->setActiveStatus("Enabled");
-        }
-
-        if (!empty($user->getToken()) && !empty($user->getUserID())) {
-            if ($user->isValidToken() && $user->verifyEmail()) {
-                $user = $user->getUserDetails();
-                require_once APP_ROOT . '/views/auth/reset.php';
-            } else {
-                require_once APP_ROOT . '/views/inc/header.php';
-                echo "
-                <body>
-                    <div class='wrapper'>
-                        <section class='form reset'>
-                            <header class='mb-4 text-center'>REALTIME Chat App</header>
-                            <h2 class='text-center mb-3'>Password Rest Link Expired!</h2>
-                            <div class='link'>Link has been failed to verify, please try again later.</a></div>
-                            <p class='hr'></p>
-                            <form action='#' method='POST' enctype='multipart/form-data' autocomplete='off' id='loginForm' data-parsley-validate>
-                            <div class='field button'>
-                                <a href='" . $routeToLogin . "' class='btn btn-danger p-2' id='login'>Go to Login</a>
-                            </div>
-                        </form>
-                        </section>
-                    </div>
-                </body>
-                </html>";
-            }
-        } else {
-            header("Location: forbidden?redirect=reset");
-        }
-    }
-
-    public function resetPassword(RouteCollection $routes) {
-        $user = new User();
-        $msg = "";
-
-        if (isset($_POST['id']) && isset($_POST['password'])) {
-            $user->setUesrID($_POST['id']);
-            $user = $user->getUserDetails();
-            $user->setPassword(sha1($_POST['password']));
-
-            if ($user->resetPassword()) {
-                $msg = "Success";
-            } else {
-                $msg = "Cannot change the Password, Please try again later!";
-            }
-            echo json_encode(["message" => $msg, "email" => $user->getEmail()]);
-        } else {
-            header("Location: forbidden?redirect=reset_password");
-        }
-    }
-
+    // Show Reset Password Request Page
     public function forgotPassword(RouteCollection $routes) {
         $routeToLogin =  $routes->get('loginPage')->getPath();
         require_once APP_ROOT . '/views/auth/forgot.php';
     }
 
-
+    // Validate user and send the reset link
     public function forgot(RouteCollection $routes) {
         $msg = "";
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
@@ -678,5 +601,96 @@ class UserController {
         } else {
             header("Location: forbidden?redirect=forgot_password");
         }
+    }
+
+    // Give access to the password reset page by link, which send to the email
+    public function reset(RouteCollection $routes) {
+        $routeToLogin = $routes->get('loginPage')->getPath();
+        $user = new User();
+
+        if (isset($_GET['token']) && isset($_GET['id'])) {
+            $user->setToken(base64_decode($_GET['token']));
+            $user->setUesrID(base64_decode($_GET['id']));
+            $user->setActiveStatus("Enabled");
+        }
+
+        if (!empty($user->getToken()) && !empty($user->getUserID())) {
+            if ($user->isValidToken() && $user->verifyEmail()) {
+                $user = $user->getUserDetails();
+                require_once APP_ROOT . '/views/auth/reset.php';
+            } else {
+                require_once APP_ROOT . '/views/inc/header.php';
+                echo "
+                <body>
+                    <div class='wrapper'>
+                        <section class='form reset'>
+                            <header class='mb-4 text-center'>REALTIME Chat App</header>
+                            <h2 class='text-center mb-3'>Password Rest Link Expired!</h2>
+                            <div class='link'>Link has been failed to verify, please try again later.</a></div>
+                            <p class='hr'></p>
+                            <form action='#' method='POST' enctype='multipart/form-data' autocomplete='off' id='loginForm' data-parsley-validate>
+                            <div class='field button'>
+                                <a href='" . $routeToLogin . "' class='btn btn-danger p-2' id='login'>Go to Login</a>
+                            </div>
+                        </form>
+                        </section>
+                    </div>
+                </body>
+                </html>";
+            }
+        } else {
+            header("Location: forbidden?redirect=reset");
+        }
+    }
+
+    // Reset Password
+    public function resetPassword(RouteCollection $routes) {
+        $user = new User();
+        $msg = "";
+
+        if (isset($_POST['id']) && isset($_POST['password'])) {
+            $user->setUesrID($_POST['id']);
+            $user = $user->getUserDetails();
+            $user->setPassword(sha1($_POST['password']));
+
+            if ($user->resetPassword()) {
+                $msg = "Success";
+            } else {
+                $msg = "Cannot change the Password, Please try again later!";
+            }
+            echo json_encode(["message" => $msg, "email" => $user->getEmail()]);
+        } else {
+            header("Location: forbidden?redirect=reset_password");
+        }
+    }
+
+    // Logout and destroy session
+    public function logout(RouteCollection $routes) {
+        session_start();
+        $user = new User();
+
+        if (isset($_SESSION['id'])) {
+
+            $user->setUesrID($_SESSION['id']);
+            $user->setStatus("Offline");
+            $user->changeStatus();
+
+            unset($_SESSION['id']);
+            header("Location: login?logout_successfully");
+        } else {
+            header("Location: login?redirect");
+        }
+    }
+
+    // Show Not Found page
+    public function notFound(RouteCollection $routes) {
+        $routeToLogin =  $routes->get('usersPage')->getPath();
+        require_once APP_ROOT . '/views/errors/404.php';
+    }
+
+    // Show Access Forbidden Page
+    public function accessForbidden(RouteCollection $routes) {
+        $routeToLogin =  $routes->get('usersPage')->getPath();
+        require_once APP_ROOT . '/views/errors/403.php';
     }
 }

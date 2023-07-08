@@ -122,6 +122,7 @@ class Chat {
         return $chats;
     }
 
+    // Convert Chat object into array
     public function objectToArray() {
         $array = [
             'chatID' => $this->chatID,

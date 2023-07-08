@@ -243,6 +243,7 @@ class User {
         return $users;
     }
 
+    //Convert User object into array
     public function objectToArray() {
         $array = [
             'userID' => $this->userID,

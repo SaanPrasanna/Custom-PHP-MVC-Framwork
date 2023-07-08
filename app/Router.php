@@ -45,7 +45,6 @@ class Router
             echo 'Route method is not allowed.';
         } catch (ResourceNotFoundException $e) {
             header("Location: notFound");
-            // echo 'Route does not exists.';
         } catch (NoConfigurationException $e) {
             echo 'Configuration does not exists.';
         }
