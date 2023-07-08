@@ -19,13 +19,15 @@ $routes->add('logout', new Route(constant('URL_SUBFOLDER') . '/logout', array('c
 //Router for User - After login
 $routes->add('usersPage', new Route(constant('URL_SUBFOLDER') . '/users', array('controller' => 'UserController', 'method' => 'usersPage'), array()));
 $routes->add('getAllUsers', new Route(constant('URL_SUBFOLDER') . '/allUsers', array('controller' => 'UserController', 'method' => 'allUsers'), array()));
+$routes->add('searchUser', new Route(constant('URL_SUBFOLDER') . '/search', array('controller' => 'UserController', 'method' => 'searchUser'), array()));
 
 //Router for Chat
 $routes->add('chatPage', new Route(constant('URL_SUBFOLDER') . '/chat', array('controller' => 'ChatController', 'method' => 'chat'), array()));
 $routes->add('sendMessage', new Route(constant('URL_SUBFOLDER') . '/sendMessage', array('controller' => 'ChatController', 'method' => 'sendMessage'), array()));
 $routes->add('getMessages', new Route(constant('URL_SUBFOLDER') . '/getMessages', array('controller' => 'ChatController', 'method' => 'getMessages'), array()));
 
-//Router to 404
+//Router to error pages
 $routes->add('404', new Route(constant('URL_SUBFOLDER') . '/notFound', array('controller' => 'UserController', 'method' => 'notFound'), array()));
+$routes->add('403', new Route(constant('URL_SUBFOLDER') . '/forbidden', array('controller' => 'UserController', 'method' => 'accessForbidden'), array()));
 
 $routes->add('login', new Route(constant('URL_SUBFOLDER') . '/', array('controller' => 'UserController', 'method' => 'indexAction'), array()));

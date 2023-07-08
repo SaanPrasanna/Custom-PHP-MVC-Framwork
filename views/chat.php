@@ -28,7 +28,6 @@
 
 
             $("#message").focus();
-
             $("#message").on('keyup', function() {
                 var inputValue = $(this).val();
                 var sendBtn = $("#send");

@@ -37,28 +37,28 @@ class ChatController {
         session_start();
         $chat = new Chat();
 
-        if(isset($_SESSION['id'])){
+        if (isset($_SESSION['id'])) {
             $chat->setOutgoingID($_SESSION['id']);
             $chat->setIncomingID($_POST['incomingID']);
             $chat->setMsg($_POST['message']);
             $chat->setCreatedOn(date('Y-m-d H:i:s'));
             $chat->setIsDeleted(0);
 
-            if($chat->insertSendMessage()){
+            if ($chat->insertSendMessage()) {
                 echo "Inserted";
-            }else{
+            } else {
                 echo "Failed";
             }
-        }else{
+        } else {
             header("Location: login"); //TODO: logout
         }
     }
 
-    public function getMessages(RouteCollection $routes){
+    public function getMessages(RouteCollection $routes) {
         session_start();
         $chatModel = new Chat();
 
-        if(isset($_SESSION['id'])){
+        if (isset($_SESSION['id'])) {
             $chatModel->setOutgoingID($_SESSION['id']);
             $chatModel->setIncomingID($_POST['incomingID']);
 
@@ -70,8 +70,8 @@ class ChatController {
                 $data[] = $chat->objectToArray();
             }
             echo json_encode($data);
-        }else{
-            echo "Session Not Found!";
+        } else {
+            header("Location: login"); //TODO: logout
         }
     }
 }

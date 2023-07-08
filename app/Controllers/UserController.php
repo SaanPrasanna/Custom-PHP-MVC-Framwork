@@ -21,7 +21,11 @@ class UserController {
 
     public function notFound(RouteCollection $routes) {
         $routeToLogin =  $routes->get('usersPage')->getPath();
-        require_once APP_ROOT . '/views/404.php';
+        require_once APP_ROOT . '/views/errors/404.php';
+    }
+    public function accessForbidden(RouteCollection $routes) {
+        $routeToLogin =  $routes->get('usersPage')->getPath();
+        require_once APP_ROOT . '/views/errors/403.php';
     }
 
     public function userAuthentication(RouteCollection $routes) {
@@ -91,6 +95,26 @@ class UserController {
             $data[] = $user->objectToArray();
         }
         echo json_encode($data);
+        exit;
+    }
+
+    public function searchUser(RouteCollection $routes) {
+        $userModel = new User();
+        if(isset($_POST['userID']) && isset($_POST['name'])){
+            $userModel->setActiveStatus("Enabled");
+            $userModel->setUesrID($_POST['userID']);
+            $userModel->setFname($_POST['name']);
+    
+            $users = $userModel->searchUsers();
+            header('Content-Type: application/json');
+            $data = [];
+            foreach ($users as $user) {
+                $data[] = $user->objectToArray();
+            }
+            echo json_encode($data);
+        }else{
+            header("Location: forbidden");
+        }
         exit;
     }
 

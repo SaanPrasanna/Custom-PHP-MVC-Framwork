@@ -75,7 +75,7 @@ class Chat {
         $this->chatID = $chatID;
     }
 
-    public function setImage($image){
+    public function setImage($image) {
         $this->image = $image;
     }
 

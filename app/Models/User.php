@@ -162,6 +162,8 @@ class User {
 
     public function allUsers() {
         $users = [];
+        $msg = "";
+
         $query = "SELECT * FROM users WHERE NOT userID = :userID AND activeStatus = :activeStatus ORDER BY userID ASC;";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":userID", $this->userID);
@@ -170,14 +172,6 @@ class User {
 
         if ($stmt->rowCount() > 0) {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $innerQuery = "SELECT * FROM chats AS c LEFT JOIN users AS u ON u.userID = c.outgoingID WHERE (c.outgoingID = :outgoingID AND c.incomingID = :incomingID)
-                OR (c.outgoingID = :incomingID AND c.incomingId = :outgoingID) ORDER BY c.chatID DESC LIMIT 1;";
-                $innerStmt = $this->conn->prepare($innerQuery);
-                $innerStmt->bindParam(":outgoingID", $this->userID);
-                $innerStmt->bindParam(":incomingID", $row['userID']);
-                $innerStmt->execute();
-                $chat = $innerStmt->fetch(PDO::FETCH_ASSOC);
-
                 $user = new User();
                 $user->setUesrID($row['userID']);
                 $user->setFname($row['fname']);
@@ -185,7 +179,63 @@ class User {
                 $user->setEmail($row['email']);
                 $user->setImage($row['image']);
                 $user->setStatus($row['status']);
-                $user->setMsg($chat['message']);
+
+                $innerQuery = "SELECT * FROM chats AS c LEFT JOIN users AS u ON u.userID = c.outgoingID WHERE (c.outgoingID = :outgoingID AND c.incomingID = :incomingID)
+                OR (c.outgoingID = :incomingID AND c.incomingId = :outgoingID) ORDER BY c.chatID DESC LIMIT 1;";
+                $innerStmt = $this->conn->prepare($innerQuery);
+                $innerStmt->bindParam(":outgoingID", $this->userID);
+                $innerStmt->bindParam(":incomingID", $row['userID']);
+                $innerStmt->execute();
+                if ($innerStmt->rowCount() > 0) {
+                    $chat = $innerStmt->fetch(PDO::FETCH_ASSOC);
+                    $msg = $chat['message'];
+                } else {
+                    $msg = "Not chat Yet, say Hello😊!";
+                }
+                (strlen($msg) > 30) ? $user->setMsg(substr($msg, 0, 30) . '...') : $user->setMsg($msg);
+
+
+                $users[] = $user;
+            }
+        }
+        return $users;
+    }
+
+    public function searchUsers() {
+        $users = [];
+        $msg = "";
+
+        $query = "SELECT * FROM users WHERE NOT userID = :userID AND activeStatus = :activeStatus AND (fname LIKE CONCAT('%', :fname, '%') OR lname LIKE CONCAT('%', :fname, '%'))";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":userID", $this->userID);
+        $stmt->bindParam(":fname", $this->fname);
+        $stmt->bindParam(":activeStatus", $this->activeStatus);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $user = new User();
+                $user->setUesrID($row['userID']);
+                $user->setFname($row['fname']);
+                $user->setLname($row['lname']);
+                $user->setEmail($row['email']);
+                $user->setImage($row['image']);
+                $user->setStatus($row['status']);
+
+                $innerQuery = "SELECT * FROM chats AS c LEFT JOIN users AS u ON u.userID = c.outgoingID WHERE (c.outgoingID = :outgoingID AND c.incomingID = :incomingID)
+                OR (c.outgoingID = :incomingID AND c.incomingId = :outgoingID) ORDER BY c.chatID DESC LIMIT 1;";
+                $innerStmt = $this->conn->prepare($innerQuery);
+                $innerStmt->bindParam(":outgoingID", $this->userID);
+                $innerStmt->bindParam(":incomingID", $row['userID']);
+                $innerStmt->execute();
+                if ($innerStmt->rowCount() > 0) {
+                    $chat = $innerStmt->fetch(PDO::FETCH_ASSOC);
+                    $msg = $chat['message'];
+                } else {
+                    $msg = "Not chat Yet, say Hello😊!";
+                }
+                (strlen($msg) > 30) ? $user->setMsg(substr($msg, 0, 30) . '...') : $user->setMsg($msg);
+
 
                 $users[] = $user;
             }
