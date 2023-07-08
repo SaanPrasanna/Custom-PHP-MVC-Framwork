@@ -14,7 +14,7 @@ require_once APP_ROOT . '/views/inc/header.php';
                         <div><?php echo $user->getStatus(); ?></div>
                     </div>
                 </div>
-                <a href="#" class="btn btn-dark">Logout</a>
+                <a href="<?php echo $routeToLogout ?>" class="btn btn-dark">Logout</a>
             </header>
             <div class="search">
                 <span class="text">Select an user to start chat</span>

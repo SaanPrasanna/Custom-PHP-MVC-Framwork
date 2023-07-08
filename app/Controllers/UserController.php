@@ -2,12 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Models\Product;
 use App\Models\User;
 use Symfony\Component\Routing\RouteCollection;
 use PHPMailer\PHPMailer\PHPMailer;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
 class UserController {
@@ -39,6 +36,8 @@ class UserController {
             if ($user->isVerifiedUser()) {
                 $user = $user->findUserID();
                 $_SESSION['id'] = $user->getUserID();
+                $user->setStatus('Online');
+                $user->changeStatus();
                 $msg = "Success";
             } else {
                 $msg = "Please verify your Email Address!";
@@ -49,8 +48,26 @@ class UserController {
         echo json_encode(["message" => $msg]);
     }
 
+    public function logout(RouteCollection $routes) {
+        session_start();
+        $user = new User();
+
+        if (isset($_SESSION['id'])) {
+
+            $user->setUesrID($_SESSION['id']);
+            $user->setStatus("Offline");
+            $user->changeStatus();
+
+            unset($_SESSION['id']);
+            header("Location: login?logout_successfully");
+        } else {
+            header("Location: login?redirect");
+        }
+    }
+
     public function usersPage(RouteCollection $routes) {
         session_start();
+        $routeToLogout =  $routes->get('logout')->getPath();
         $user = new User();
 
         if (isset($_SESSION['id'])) {
@@ -62,7 +79,6 @@ class UserController {
         }
     }
 
-    //Get User List
     public function allUsers(RouteCollection $routes) {
         $userModel = new User();
         $userModel->setActiveStatus("Enabled");

@@ -2,7 +2,6 @@
 
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\HttpFoundation\Response;
 
 $routes = new RouteCollection();
 //Routers for Auth
@@ -15,6 +14,7 @@ $routes->add('forgotPage', new Route(constant('URL_SUBFOLDER') . '/forgot', arra
 $routes->add('forgot', new Route(constant('URL_SUBFOLDER') . '/forgotPassword', array('controller' => 'UserController', 'method' => 'forgot'), array()));
 $routes->add('reest', new Route(constant('URL_SUBFOLDER') . '/reset', array('controller' => 'UserController', 'method' => 'reset'), array()));
 $routes->add('resetPassword', new Route(constant('URL_SUBFOLDER') . '/resetPassword', array('controller' => 'UserController', 'method' => 'resetPassword'), array()));
+$routes->add('logout', new Route(constant('URL_SUBFOLDER') . '/logout', array('controller' => 'UserController', 'method' => 'logout'), array()));
 
 //Router for User - After login
 $routes->add('usersPage', new Route(constant('URL_SUBFOLDER') . '/users', array('controller' => 'UserController', 'method' => 'usersPage'), array()));
@@ -28,7 +28,4 @@ $routes->add('getMessages', new Route(constant('URL_SUBFOLDER') . '/getMessages'
 //Router to 404
 $routes->add('404', new Route(constant('URL_SUBFOLDER') . '/notFound', array('controller' => 'UserController', 'method' => 'notFound'), array()));
 
-
-$routes->add('product', new Route(constant('URL_SUBFOLDER') . '/product/{id}', array('controller' => 'ProductController', 'method' => 'showAction'), array('id' => '[0-9]+')));
-$routes->add('test', new Route(constant('URL_SUBFOLDER') . '/test', array('controller' => 'HomeController', 'method' => 'getProductListAction'), array()));
 $routes->add('login', new Route(constant('URL_SUBFOLDER') . '/', array('controller' => 'UserController', 'method' => 'indexAction'), array()));
