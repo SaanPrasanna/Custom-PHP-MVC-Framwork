@@ -112,7 +112,7 @@ class UserController {
         $routeToLogin =  $routes->get('loginPage')->getPath();
         $userModel = new User();
 
-        if ($_SESSION['id']) {
+        if (isset($_SESSION['id'])) {
             header("Location: users");
         } else {
             require_once APP_ROOT . '/views/auth/register.php';
