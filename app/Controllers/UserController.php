@@ -10,13 +10,17 @@ use PHPMailer\PHPMailer\PHPMailer;
 class UserController {
 
     public function indexAction(RouteCollection $routes) {
+        session_start();
         $routeToHome =  $routes->get('loginPage')->getPath();
         $routeToReset =  $routes->get('forgotPage')->getPath();
         $routeToRegister =  $routes->get('registerPage')->getPath();
 
         $userModel = new User();
-
-        require_once APP_ROOT . '/views/auth/login.php';
+        if(isset($_SESSION['id'])){
+            header("Location: users");
+        }else{
+            require_once APP_ROOT . '/views/auth/login.php';
+        }
     }
 
     public function notFound(RouteCollection $routes) {
@@ -125,10 +129,15 @@ class UserController {
     }
 
     public function userRegister(RouteCollection $routes) {
+        session_start();
         $routeToLogin =  $routes->get('loginPage')->getPath();
         $userModel = new User();
-
-        require_once APP_ROOT . '/views/auth/register.php';
+        
+        if($_SESSION['id']){
+            header("Location: users");
+        }else{
+            require_once APP_ROOT . '/views/auth/register.php';
+        }
     }
 
     public function registerUser(RouteCollection $routes) {
