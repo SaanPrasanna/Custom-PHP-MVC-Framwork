@@ -31,7 +31,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/mvc architecture/asserts/javascript/parsley.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>/asserts/javascript/parsley.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -51,9 +51,8 @@
 
                 var form = $(this);
                 var formData = new FormData(form[0]);
-
                 $.ajax({
-                    url: '/mvc%20architecture/loginUser',
+                    url: '<?php echo BASE_URL ?>/loginUser',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -61,7 +60,7 @@
                     success: function(response) {
                         var data = JSON.parse(response);
                         if (data.message === "Success") {
-                            $(location).prop('href', '/mvc architecture/users');
+                            $(location).prop('href', '<?php echo BASE_URL; ?>/users');
                         } else {
                             $('#login').prop('disabled', false);
                             $('#alert').text(data.message);

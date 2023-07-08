@@ -42,7 +42,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/mvc architecture/asserts/javascript/parsley.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>/asserts/javascript/parsley.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -65,7 +65,7 @@
                 var formData = new FormData(form[0]);
 
                 $.ajax({
-                    url: '/mvc%20architecture/resetPassword',
+                    url: '<?php echo BASE_URL; ?>/resetPassword',
                     type: 'POST',
                     data: formData,
                     processData: false,

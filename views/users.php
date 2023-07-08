@@ -45,7 +45,7 @@ require_once APP_ROOT . '/views/inc/header.php';
             formData.append('userID', '<?php echo $user->getUserID(); ?>');
             setInterval(() => {
                 $.ajax({
-                    url: '/mvc%20architecture/allUsers',
+                    url: '<?php echo BASE_URL; ?>/allUsers',
                     method: 'POST',
                     data: formData,
                     processData: false,
@@ -83,7 +83,7 @@ require_once APP_ROOT . '/views/inc/header.php';
                 formData.append('userID', '<?php echo $user->getUserID(); ?>');
                 formData.append('name', $("#search").val());
                 $.ajax({
-                    url: '/mvc%20architecture/search',
+                    url: '<?php echo BASE_URL; ?>/search',
                     method: 'POST',
                     data: formData,
                     processData: false,

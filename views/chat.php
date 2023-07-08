@@ -46,7 +46,7 @@
                 var formData = new FormData(form[0]);
 
                 $.ajax({
-                    url: '/mvc%20architecture/sendMessage',
+                    url: '<?php echo BASE_URL; ?>/sendMessage',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -66,7 +66,7 @@
                 formData.append('incomingID', '<?php echo $user->getUserID(); ?>');
 
                 $.ajax({
-                    url: '/mvc%20architecture/getMessages',
+                    url: '<?php echo BASE_URL; ?>/getMessages',
                     type: 'POST',
                     data: formData,
                     processData: false,

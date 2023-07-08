@@ -257,7 +257,7 @@ class UserController {
                                                                 "
                                                             >
                                                                 <a
-                                                                href="' . $baseUrl . "/mvc architecture/verify?token=" . base64_encode($user->getToken()) . "&id=" . base64_encode($user->getUserID()) . '"
+                                                                href="' . BASE_URL . "/verify?token=" . base64_encode($user->getToken()) . "&id=" . base64_encode($user->getUserID()) . '"
                                                                 style="
                                                                     color: #1b74e4;
                                                                     text-decoration: none;
@@ -522,7 +522,7 @@ class UserController {
                                                                 "
                                                             >
                                                                 <a
-                                                                href="' . $baseUrl . "/mvc architecture/reset?token=" . base64_encode($user->getToken()) . "&id=" . base64_encode($user->getUserID()) . '"
+                                                                href="' . BASE_URL . "/reset?token=" . base64_encode($user->getToken()) . "&id=" . base64_encode($user->getUserID()) . '"
                                                                 style="
                                                                     color: #1b74e4;
                                                                     text-decoration: none;

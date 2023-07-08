@@ -20,7 +20,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/mvc architecture/asserts/javascript/parsley.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>/asserts/javascript/parsley.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -40,7 +40,7 @@
                 var formData = new FormData(form[0]);
 
                 $.ajax({
-                    url: '/mvc%20architecture/forgotPassword',
+                    url: '<?php echo BASE_URL; ?>/forgotPassword',
                     type: 'POST',
                     data: formData,
                     processData: false,
