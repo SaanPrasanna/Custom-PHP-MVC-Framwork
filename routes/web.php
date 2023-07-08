@@ -8,7 +8,7 @@ $routes = new RouteCollection();
 $routes->add('loginPage', new Route(constant('URL_SUBFOLDER') . '/login', array('controller' => 'UserController', 'method' => 'indexAction'), array()));
 $routes->add('loginUser', new Route(constant('URL_SUBFOLDER') . '/loginUser', array('controller' => 'UserController', 'method' => 'userAuthentication'), array()));
 $routes->add('registerPage', new Route(constant('URL_SUBFOLDER') . '/register', array('controller' => 'UserController', 'method' => 'userRegister'), array()));
-$routes->add('registerUser', new Route(constant('URL_SUBFOLDER') . '/registerUesr', array('controller' => 'UserController', 'method' => 'registerUser'), array()));
+$routes->add('registerUser', new Route(constant('URL_SUBFOLDER') . '/registerUser', array('controller' => 'UserController', 'method' => 'registerUser'), array()));
 $routes->add('verifyUser', new Route(constant('URL_SUBFOLDER') . '/verify', array('controller' => 'UserController', 'method' => 'verifyUser'), array()));
 $routes->add('forgotPage', new Route(constant('URL_SUBFOLDER') . '/forgot', array('controller' => 'UserController', 'method' => 'forgotPassword'), array()));
 $routes->add('forgot', new Route(constant('URL_SUBFOLDER') . '/forgotPassword', array('controller' => 'UserController', 'method' => 'forgot'), array()));
