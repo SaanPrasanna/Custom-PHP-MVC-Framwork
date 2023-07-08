@@ -31,25 +31,28 @@ class UserController {
     public function userAuthentication(RouteCollection $routes) {
         session_start();
         $user = new User();
+        if (isset($_POST['email']) && isset($_POST['password'])) {
+            $user->setEmail($_POST['email']);
+            $user->setPassword(sha1($_POST['password']));
+            $user->setActiveStatus("Enabled");
 
-        $user->setEmail($_POST['email']);
-        $user->setPassword(sha1($_POST['password']));
-        $user->setActiveStatus("Enabled");
-
-        if ($user->authentication()) {
-            if ($user->isVerifiedUser()) {
-                $user = $user->findUserID();
-                $_SESSION['id'] = $user->getUserID();
-                $user->setStatus('Online');
-                $user->changeStatus();
-                $msg = "Success";
+            if ($user->authentication()) {
+                if ($user->isVerifiedUser()) {
+                    $user = $user->findUserID();
+                    $_SESSION['id'] = $user->getUserID();
+                    $user->setStatus('Online');
+                    $user->changeStatus();
+                    $msg = "Success";
+                } else {
+                    $msg = "Please verify your Email Address!";
+                }
             } else {
-                $msg = "Please verify your Email Address!";
+                $msg = "Invalid Username or Password!";
             }
+            echo json_encode(["message" => $msg]);
         } else {
-            $msg = "Invalid Username or Password!";
+            header("Location: forbidden?redirect=login");
         }
-        echo json_encode(["message" => $msg]);
     }
 
     public function logout(RouteCollection $routes) {
@@ -85,26 +88,29 @@ class UserController {
 
     public function allUsers(RouteCollection $routes) {
         $userModel = new User();
-        $userModel->setActiveStatus("Enabled");
-        $userModel->setUesrID($_POST['userID']);
-        $users = $userModel->allUsers();
+        if (isset($_POST['userID'])) {
+            $userModel->setActiveStatus("Enabled");
+            $userModel->setUesrID($_POST['userID']);
+            $users = $userModel->allUsers();
 
-        header('Content-Type: application/json');
-        $data = [];
-        foreach ($users as $user) {
-            $data[] = $user->objectToArray();
+            header('Content-Type: application/json');
+            $data = [];
+            foreach ($users as $user) {
+                $data[] = $user->objectToArray();
+            }
+            echo json_encode($data);
+        } else {
+            header("Location: forbidden?redirect=all_users");
         }
-        echo json_encode($data);
-        exit;
     }
 
     public function searchUser(RouteCollection $routes) {
         $userModel = new User();
-        if(isset($_POST['userID']) && isset($_POST['name'])){
+        if (isset($_POST['userID']) && isset($_POST['name'])) {
             $userModel->setActiveStatus("Enabled");
             $userModel->setUesrID($_POST['userID']);
             $userModel->setFname($_POST['name']);
-    
+
             $users = $userModel->searchUsers();
             header('Content-Type: application/json');
             $data = [];
@@ -112,8 +118,8 @@ class UserController {
                 $data[] = $user->objectToArray();
             }
             echo json_encode($data);
-        }else{
-            header("Location: forbidden");
+        } else {
+            header("Location: forbidden?redirect=search_users");
         }
         exit;
     }
@@ -342,6 +348,8 @@ class UserController {
                 $msg = "Please upload an image file - jpeg, png, jpg";
             }
             echo json_encode(["message" => $msg]);
+        } else {
+            header("Location: forbidden?redirect=register");
         }
     }
 
@@ -397,7 +405,7 @@ class UserController {
                 </html>";
             }
         } else {
-            require_once APP_ROOT . '/views/404.php';
+            header("Location: forbidden?redirect=verify");
         }
     }
 
@@ -436,7 +444,7 @@ class UserController {
                 </html>";
             }
         } else {
-            header("Location: notFound?invalid_reset_link");
+            header("Location: forbidden?redirect=reset");
         }
     }
 
@@ -444,16 +452,20 @@ class UserController {
         $user = new User();
         $msg = "";
 
-        $user->setUesrID($_POST['id']);
-        $user = $user->getUserDetails();
-        $user->setPassword(sha1($_POST['password']));
+        if (isset($_POST['id']) && isset($_POST['password'])) {
+            $user->setUesrID($_POST['id']);
+            $user = $user->getUserDetails();
+            $user->setPassword(sha1($_POST['password']));
 
-        if ($user->resetPassword()) {
-            $msg = "Success";
+            if ($user->resetPassword()) {
+                $msg = "Success";
+            } else {
+                $msg = "Cannot change the Password, Please try again later!";
+            }
+            echo json_encode(["message" => $msg, "email" => $user->getEmail()]);
         } else {
-            $msg = "Cannot change the Password, Please try again later!";
+            header("Location: forbidden?redirect=reset_password");
         }
-        echo json_encode(["message" => $msg, "email" => $user->getEmail()]);
     }
 
     public function forgotPassword(RouteCollection $routes) {
@@ -469,30 +481,31 @@ class UserController {
         $baseUrl = $protocol . "://" . $host;
 
         $user = new User();
-        $user->setEmail($_POST['email']);
+        if (isset($_POST['email'])) {
+            $user->setEmail($_POST['email']);
 
-        if ($user->emailAlreadyExist()) {
-            $token = bin2hex(random_bytes(16));
-            $user->setToken($token);
-            if ($user->getNewToken()) {
-                $user = $user->findUserID();
+            if ($user->emailAlreadyExist()) {
+                $token = bin2hex(random_bytes(16));
                 $user->setToken($token);
-                $mail = new PHPMailer(true);
+                if ($user->getNewToken()) {
+                    $user = $user->findUserID();
+                    $user->setToken($token);
+                    $mail = new PHPMailer(true);
 
-                $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';
-                $mail->SMTPAuth = true;
-                $mail->Username   = 'info.rootgenesis@gmail.com';
-                $mail->Password   = 'ykhqiqsptadzozbk';
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->SMTPSecure = 'tls';
-                $mail->Port = 587;
+                    $mail->isSMTP();
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username   = 'info.rootgenesis@gmail.com';
+                    $mail->Password   = 'ykhqiqsptadzozbk';
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->SMTPSecure = 'tls';
+                    $mail->Port = 587;
 
-                $mail->setFrom('info.rootgenesis@gmailc.om', 'Root Genesis');
-                $mail->addAddress($user->getEmail());
-                $mail->isHTML(true);
-                $mail->Subject = 'Reset Password for REALTIME Chat App';
-                $msg = '
+                    $mail->setFrom('info.rootgenesis@gmailc.om', 'Root Genesis');
+                    $mail->addAddress($user->getEmail());
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Reset Password for REALTIME Chat App';
+                    $msg = '
                         <tbody>
                             <tr>
                                 <td height="20" style="line-height: 20px" colspan="3">&nbsp;</td>
@@ -642,16 +655,19 @@ class UserController {
                             </tr>
                             </tbody>
                         ';
-                $mail->Body = $msg;
+                    $mail->Body = $msg;
 
-                $mail->send();
-                $msg = "Success";
+                    $mail->send();
+                    $msg = "Success";
+                } else {
+                    $msg = "Please try again later!";
+                }
             } else {
-                $msg = "Please try again later!";
+                $msg = "Email does not exist in the Database";
             }
+            echo json_encode(["message" => $msg]);
         } else {
-            $msg = "Email does not exist in the Database";
+            header("Location: forbidden?redirect=forgot_password");
         }
-        echo json_encode(["message" => $msg]);
     }
 }

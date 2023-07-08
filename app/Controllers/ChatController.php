@@ -50,7 +50,7 @@ class ChatController {
                 echo "Failed";
             }
         } else {
-            header("Location: login"); //TODO: logout
+            header("Location: forbidden?redirect=send_message");
         }
     }
 
@@ -71,7 +71,7 @@ class ChatController {
             }
             echo json_encode($data);
         } else {
-            header("Location: login"); //TODO: logout
+            header("Location: forbidden?redirect=get_messages");
         }
     }
 }
