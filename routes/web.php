@@ -16,12 +16,16 @@ $routes->add('forgot', new Route(constant('URL_SUBFOLDER') . '/forgotPassword', 
 $routes->add('reest', new Route(constant('URL_SUBFOLDER') . '/reset', array('controller' => 'UserController', 'method' => 'reset'), array()));
 $routes->add('resetPassword', new Route(constant('URL_SUBFOLDER') . '/resetPassword', array('controller' => 'UserController', 'method' => 'resetPassword'), array()));
 
+//Router for User - After login
 $routes->add('usersPage', new Route(constant('URL_SUBFOLDER') . '/users', array('controller' => 'UserController', 'method' => 'usersPage'), array()));
 $routes->add('getAllUsers', new Route(constant('URL_SUBFOLDER') . '/allUsers', array('controller' => 'UserController', 'method' => 'allUsers'), array()));
 
+//Router for Chat
 $routes->add('chatPage', new Route(constant('URL_SUBFOLDER') . '/chat', array('controller' => 'ChatController', 'method' => 'chat'), array()));
 $routes->add('sendMessage', new Route(constant('URL_SUBFOLDER') . '/sendMessage', array('controller' => 'ChatController', 'method' => 'sendMessage'), array()));
+$routes->add('getMessages', new Route(constant('URL_SUBFOLDER') . '/getMessages', array('controller' => 'ChatController', 'method' => 'getMessages'), array()));
 
+//Router to 404
 $routes->add('404', new Route(constant('URL_SUBFOLDER') . '/notFound', array('controller' => 'UserController', 'method' => 'notFound'), array()));
 
 
