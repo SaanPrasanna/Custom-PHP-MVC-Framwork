@@ -141,16 +141,53 @@ class User {
         $stmt->execute();
         if ($stmt->rowCount() == 1) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user->setUesrID($row['userID']);
+            $user->setFname($row['fname']);
+            $user->setLname($row['lname']);
+            $user->setEmail($row['email']);
+            $user->setImage($row['image']);
+            $user->setStatus($row['status']);
+        }
+        return $user;
+    }
+
+    public function allUsers() {
+        $users = [];
+        $query = "SELECT * FROM users WHERE NOT userID = :userID AND activeStatus = :activeStatus ORDER BY userID ASC;";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":userID", $this->userID);
+        $stmt->bindParam(":activeStatus", $this->activeStatus);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $user = new User();
                 $user->setUesrID($row['userID']);
                 $user->setFname($row['fname']);
                 $user->setLname($row['lname']);
                 $user->setEmail($row['email']);
                 $user->setImage($row['image']);
+                $user->setStatus($row['status']);
+                $users[] = $user;
+            }
         }
-        return $user;
+        return $users;
     }
 
-    public function changeStatus() { // TODO: not used yet
+    public function objectToArray() {
+        $array = [
+            'userID' => $this->userID,
+            'fname' => $this->fname,
+            'lname' => $this->lname,
+            'email' => $this->email,
+            'image' => $this->image,
+            'status' => $this->status
+        ];
+
+        return $array;
+    }
+
+    public function changeStatus() { // TODO: Need to implement login
         $query = "UPDATE users SET status = :status WHERE userID = :userID";
 
         $stmt = $this->conn->prepare($query);
@@ -240,7 +277,7 @@ class User {
 
     public function findUserID() {
         $query = "SELECT * FROM users  WHERE email = :email;";
-        $row = [];
+        $user = new User();
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":email", $this->email, PDO::PARAM_STR);
@@ -248,11 +285,16 @@ class User {
 
         if ($stmt->rowCount() == 1) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user->setUesrID($row['userID']);
+            $user->setFname($row['fname']);
+            $user->setLname($row['lname']);
+            $user->setEmail($row['email']);
+            $user->setImage($row['image']);
         }
-        return $row;
+        return $user;
     }
 
-    public function resetPassword(){
+    public function resetPassword() {
         $query = "UPDATE users SET password = :password WHERE email = :email;";
 
         $stmt = $this->conn->prepare($query);

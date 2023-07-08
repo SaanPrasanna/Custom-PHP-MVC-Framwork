@@ -22,11 +22,13 @@ class UserController {
         require_once APP_ROOT . '/views/auth/login.php';
     }
 
-    public function notFound(RouteCollection $routes){
+    public function notFound(RouteCollection $routes) {
+        $routeToLogin =  $routes->get('usersPage')->getPath();
         require_once APP_ROOT . '/views/404.php';
     }
 
     public function userAuthentication(RouteCollection $routes) {
+        session_start();
         $user = new User();
 
         $user->setEmail($_POST['email']);
@@ -35,6 +37,8 @@ class UserController {
 
         if ($user->authentication()) {
             if ($user->isVerifiedUser()) {
+                $user = $user->findUserID();
+                $_SESSION['id'] = $user->getUserID();
                 $msg = "Success";
             } else {
                 $msg = "Please verify your Email Address!";
@@ -45,8 +49,33 @@ class UserController {
         echo json_encode(["message" => $msg]);
     }
 
-    public function showUsers(RouteCollection $routes) {
-        require_once APP_ROOT . '/views/users.php';
+    public function usersPage(RouteCollection $routes) {
+        session_start();
+        $user = new User();
+
+        if (isset($_SESSION['id'])) {
+            $user->setUesrID($_SESSION['id']);
+            $user = $user->getUserDetails();
+            require_once APP_ROOT . '/views/users.php';
+        } else {
+            header("Location: login");
+        }
+    }
+
+    //Get User List
+    public function allUsers(RouteCollection $routes) {
+        $userModel = new User();
+        $userModel->setActiveStatus("Enabled");
+        $userModel->setUesrID($_POST['userID']);
+        $users = $userModel->allUsers();
+
+        header('Content-Type: application/json');
+        $data = [];
+        foreach ($users as $user) {
+            $data[] = $user->objectToArray();
+        }
+        echo json_encode($data);
+        exit;
     }
 
     public function userRegister(RouteCollection $routes) {
@@ -280,7 +309,7 @@ class UserController {
 
         $user = new User();
         $routeToLogin = $routes->get('loginPage')->getPath();
-        
+
         if (isset($_GET['token']) && isset($_GET['id'])) {
             $token = base64_decode($_GET['token']);
             $userID = base64_decode($_GET['id']);
@@ -290,27 +319,44 @@ class UserController {
             $user->setUesrID($userID);
 
             require_once APP_ROOT . '/views/inc/header.php';
-            echo "  <body>
-                    <div class='container'>";
             if ($user->isValidToken() && $user->verifyEmail()) {
                 echo "
-                <h1>Email Verification Successful</h1>
-                <p>Your email has been successfully verified.</p>
-                <p>Thank you for verifying your email address.</p>
-                <a href='dashboard.php' class='btn btn-primary'>Go to Dashboard</a>
+                <body>
+                    <div class='wrapper'>
+                        <section class='form signup'>
+                            <header class='mb-4 text-center'>REALTIME Chat App</header>
+                            <h2 class='text-center mb-3'>Email Verification Successfully!</h2>
+                            <div class='link'>Thank you for verifying your email address.</a></div>
+                            <p class='hr'></p>
+                            <form action='#' method='POST' enctype='multipart/form-data' autocomplete='off' id='loginForm' data-parsley-validate>
+                            <div class='field button'>
+                                <a href='" . $routeToLogin . "' class='btn btn-success p-2' id='login'>Go to Login</a>
+                            </div>
+                        </form>
+                        </section>
+                    </div>
                 </body>
                 </html>";
             } else {
                 echo "
-                <h1>Email Verification Link Expired</h1>
-                <p>Your email has been failed to verify, please try again later.</p>
-                <a href='dashboard.php' class='btn btn-danger'>Go to Dashboard</a>
-                
+                <body>
+                    <div class='wrapper'>
+                        <section class='form signup'>
+                            <header class='mb-4 text-center'>REALTIME Chat App</header>
+                            <h2 class='text-center mb-3'>Email Verification Link Expired!</h2>
+                            <div class='link'>Your email has been failed to verify, please try again later.</a></div>
+                            <p class='hr'></p>
+                            <form action='#' method='POST' enctype='multipart/form-data' autocomplete='off' id='loginForm' data-parsley-validate>
+                            <div class='field button'>
+                                <a href='" . $routeToLogin . "' class='btn btn-danger p-2' id='login'>Go to Login</a>
+                            </div>
+                        </form>
+                        </section>
+                    </div>
                 </body>
-                
                 </html>";
             }
-        }else{
+        } else {
             require_once APP_ROOT . '/views/404.php';
         }
     }
@@ -331,18 +377,26 @@ class UserController {
                 require_once APP_ROOT . '/views/auth/reset.php';
             } else {
                 require_once APP_ROOT . '/views/inc/header.php';
-                echo "  <body>
-                            <div class='container'>
-                                <h1>Email Verification Link Expired</h1>
-                                <p>Your email has been failed to verify, please try again later.</p>
-                                <a href='dashboard.php' class='btn btn-danger'>Go to Dashboard</a>
-                                </div>
-                            </body>
-            
-                            </html>";
+                echo "
+                <body>
+                    <div class='wrapper'>
+                        <section class='form reset'>
+                            <header class='mb-4 text-center'>REALTIME Chat App</header>
+                            <h2 class='text-center mb-3'>Password Rest Link Expired!</h2>
+                            <div class='link'>Link has been failed to verify, please try again later.</a></div>
+                            <p class='hr'></p>
+                            <form action='#' method='POST' enctype='multipart/form-data' autocomplete='off' id='loginForm' data-parsley-validate>
+                            <div class='field button'>
+                                <a href='" . $routeToLogin . "' class='btn btn-danger p-2' id='login'>Go to Login</a>
+                            </div>
+                        </form>
+                        </section>
+                    </div>
+                </body>
+                </html>";
             }
         } else {
-            require_once APP_ROOT . '/views/404.php';
+            header("Location: notFound?invalid_reset_link");
         }
     }
 
@@ -378,12 +432,11 @@ class UserController {
         $user->setEmail($_POST['email']);
 
         if ($user->emailAlreadyExist()) {
-            $user->setToken(bin2hex(random_bytes(16)));
+            $token = bin2hex(random_bytes(16));
+            $user->setToken($token);
             if ($user->getNewToken()) {
-                $user->setUesrID($user->findUserID($user->getEmail())['userID']);
-                $user->setFname($user->findUserID($user->getEmail())['fname']);
-                $user->setLname($user->findUserID($user->getEmail())['lname']);
-
+                $user = $user->findUserID();
+                $user->setToken($token);
                 $mail = new PHPMailer(true);
 
                 $mail->isSMTP();

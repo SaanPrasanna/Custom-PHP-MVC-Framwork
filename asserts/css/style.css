@@ -260,10 +260,10 @@ small{
 }
 
 .users-list a {
-  padding-bottom: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   padding-right: 15px;
   border-bottom-color: #f1f1f1;
+  text-decoration: none !important;
 }
 
 .users-list a:last-child {
@@ -286,7 +286,7 @@ small{
   padding-left: 10px;
 }
 
-.users-list a .status-dot.offline {
+.users-list a .status-dot.Offline {
   color: #ccc;
 }
 
@@ -354,8 +354,8 @@ small{
 }
 
 .outgoing .details p {
-  background: #333;
-  color: #fff;
+  background: #fff;
+  color: #333;
   border-radius: 18px 18px 0 18px;
 }
 
@@ -376,8 +376,8 @@ small{
 }
 
 .incoming .details p {
-  background: #fff;
-  color: #333;
+  background: #333;
+  color: #fff;
   border-radius: 18px 18px 18px 0;
 }
 
@@ -398,15 +398,15 @@ small{
 }
 
 .typing-area button {
-  color: #fff;
+  /* color: #fff; */
   width: 55px;
   border: none;
   outline: none;
-  background: #333;
+  /* background: #333; */
   font-size: 19px;
   cursor: pointer;
-  opacity: 0.7;
-  pointer-events: none;
+  /* opacity: 0.7; */
+  /* pointer-events: none; */
   border-radius: 0 5px 5px 0;
   transition: all 0.3s ease;
 }

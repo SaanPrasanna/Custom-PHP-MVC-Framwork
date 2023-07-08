@@ -53,7 +53,7 @@
                 var formData = new FormData(form[0]);
 
                 $.ajax({
-                    url: '/mvc%20architecture/login',
+                    url: '/mvc%20architecture/loginUser',
                     type: 'POST',
                     data: formData,
                     processData: false,
