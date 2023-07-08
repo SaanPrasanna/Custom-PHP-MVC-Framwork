@@ -12,34 +12,6 @@
                 </div>
             </header>
             <div class="chat-box">
-                <?php
-                $dateTime = date('d M Y, h:i A');
-
-                $output = '<div class="chat outgoing">
-                                <div class="details">
-                                    <p>Sample Message From Outgoing</p>
-                                </div>
-                            </div>';
-                $output .= '<div class="chat incoming">
-                                <img src="asserts/img/245096430_107685328350666_5959259511000387097_n.jpg" alt="">
-                                <div class="details">
-                                    <p>Sample Incoming Message😁😁😁</p>
-                                </div>
-                            </div>';
-                $output .= '<div class="chat outgoing">
-                <div class="details">
-                    <p>Sample Message From Outgoing</p>
-                </div>
-            </div>';
-                $output .= '<div class="chat incoming">
-                        <img src="asserts/img/245096430_107685328350666_5959259511000387097_n.jpg" alt="">
-                        <div class="details">
-                            <p>Sample Incoming Message</p>
-                        </div>
-                    </div>';
-                echo $output;
-                ?>
-
             </div>
             <form action="#" method="POST" enctype="multipart/form-data" autocomplete="off" id="chatForm" class="typing-area input-group mb-3">
                 <input type="text" class="incomingID" name="incomingID" value="<?php echo $user->getUserID(); ?>" hidden>
@@ -84,23 +56,73 @@
                         console.log(response);
                         $("#message").val('');
                         $("#send").prop("disabled", true);
+                        scrollToBottom();
                     },
                     error: function(xhr, status, error) {}
                 });
 
             });
+            setInterval(() => {
+                var formData = new FormData();
+                formData.append('incomingID', '<?php echo $user->getUserID(); ?>');
 
-            $(document).ready(function() {
-                var chatBox = $(".chat-box");
+                $.ajax({
+                    url: '/mvc%20architecture/getMessages',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log(response);
+                        if (response.length > 0) {
+                            var data = '';
 
-                chatBox.mouseenter(function() {
-                    chatBox.addClass("active");
+                            $.each(response, function(index, chat) {
+                                if (<?php echo $user->getUserID() ?> === chat.incomingID) {
+                                    data += '<div class="chat outgoing">';
+                                    data += '<div class="details">';
+                                    data += '<p>' + chat.message + '</p>';
+                                    data += '</div>';
+                                    data += '</div>';
+                                } else {
+                                    data += '<div class="chat incoming">';
+                                    data += '<img src="asserts/img/' + chat.image + '" alt="">';
+                                    data += '<div class="details">';
+                                    data += '<p>' + chat.message + '</p>';
+                                    data += '</div>';
+                                    data += '</div>';
+
+                                }
+                            });
+
+                            $(".chat-box").html(data);
+                            if (!$('.chat-box').hasClass("active")) {
+                                scrollToBottom();
+                            }
+                        } else {
+                            $(".chat-box").html('<div class="text">No messages are available. Once you send message they will appear here.</div>');
+                        }
+                    },
+                    error: function(xhr, status, error) {}
                 });
+            }, 500);
 
-                chatBox.mouseleave(function() {
-                    chatBox.removeClass("active");
-                });
+
+
+            var chatBox = $(".chat-box");
+
+            chatBox.mouseenter(function() {
+                chatBox.addClass("active");
             });
+
+            chatBox.mouseleave(function() {
+                chatBox.removeClass("active");
+            });
+
+            function scrollToBottom() {
+                var chatBox = $('.chat-box');
+                chatBox.scrollTop(chatBox[0].scrollHeight);
+            }
 
         });
     </script>

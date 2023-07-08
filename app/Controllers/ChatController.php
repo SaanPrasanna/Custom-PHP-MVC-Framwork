@@ -53,4 +53,25 @@ class ChatController {
             header("Location: login"); //TODO: logout
         }
     }
+
+    public function getMessages(RouteCollection $routes){
+        session_start();
+        $chatModel = new Chat();
+
+        if(isset($_SESSION['id'])){
+            $chatModel->setOutgoingID($_SESSION['id']);
+            $chatModel->setIncomingID($_POST['incomingID']);
+
+            $chats = $chatModel->getMessages();
+
+            header('Content-Type: application/json');
+            $data = [];
+            foreach ($chats as $chat) {
+                $data[] = $chat->objectToArray();
+            }
+            echo json_encode($data);
+        }else{
+            echo "Session Not Found!";
+        }
+    }
 }
