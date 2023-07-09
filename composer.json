@@ -1,5 +1,5 @@
 {
-    "name": "gmaccario/simple-mvc-php-framework",
+    "name": "rgn/custome-mvc-framework",
     "description": "Simple MVC PHP framework",
     "autoload": {
         "psr-4": {
