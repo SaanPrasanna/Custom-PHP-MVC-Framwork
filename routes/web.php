@@ -30,4 +30,4 @@ $routes->add('getMessages', new Route(constant('URL_SUBFOLDER') . '/getMessages'
 $routes->add('404', new Route(constant('URL_SUBFOLDER') . '/notFound', array('controller' => 'UserController', 'method' => 'notFound'), array()));
 $routes->add('403', new Route(constant('URL_SUBFOLDER') . '/forbidden', array('controller' => 'UserController', 'method' => 'accessForbidden'), array()));
 
-$routes->add('login', new Route(constant('URL_SUBFOLDER') . '/', array('controller' => 'UserController', 'method' => 'indexAction'), array()));
+$routes->add('login', new Route(constant('URL_SUBFOLDER') . '/', array('controller' => 'UserController', 'method' => 'loginRedirect'), array()));

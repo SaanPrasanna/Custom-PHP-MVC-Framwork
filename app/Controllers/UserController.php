@@ -24,6 +24,10 @@ class UserController {
         }
     }
 
+    public function loginRedirect(RouteCollection $routes ){
+        header("Location: login");
+    }
+
     // Authenticate User Credentials and handle session
     public function userAuthentication(RouteCollection $routes) {
         session_start();
